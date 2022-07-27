@@ -37,25 +37,46 @@ int main()
         printf("Connection established\n");
     }
 
-    int buf[10] = {9, 4, 5, 2, 88, 231, -323, 233, 232, 0}, res[3];
-    int min, max, avg;
+    //int buf[10] = {9, 4, 5, 2, 88, 231, -323, 233, 232, 0}, res[3];
+    int input[4][4];
+    int output[4][4];
+    
+    printf("Enter the value of matrices\n");
+    for(int i=0;i<4;i++)
+    {
+      for(int j=0;j<4;j++)
+      {
+        scanf("%d",&input[i][j]);
+      }
+    }
+    //int min, max, avg;
 
-    int length = send(sockfd, buf, sizeof(buf), 0);
+    int length = send(sockfd, input, sizeof(input), 0);
     if (length > 0)
     {
         printf("Array send to server \n");
-        for (int i = 0; i < 10; i++)
-        {
-            printf("%d ", buf[i]);
-        }
-        printf("\n");
+         for(int i=0;i<4;i++)
+	    {
+	      for(int j=0;j<4;j++)
+	      {
+		printf("%d",input[i][j]);
+	      }
+	       printf("\n");
+	    }
     }
-    int recv_length = read(sockfd, res, 3 * sizeof(int));
+    int recv_length = read(sockfd, output,sizeof(output));
     if (recv_length > 0)
     {
-        printf("Maximum is %d\n", res[2]);
-        printf("Minimum is %d\n", res[1]);
-        printf("Average is %d\n", res[0]);
+        printf("THe transpose is:\n");
+         for(int i=0;i<4;i++)
+	    {
+	      for(int j=0;j<4;j++)
+	      {
+		printf("%d\t",output[i][j]);
+	      }
+	       printf("\n");
+	    }
+        
     }
     close(sockfd);
 }

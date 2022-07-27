@@ -1,4 +1,4 @@
-=-00p-#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -62,30 +62,24 @@ int main()
             printf("Connection established\n");
         }
 
-        int buf[10], res[3];
-        res[0] = 0;
-        res[1] = INT_MAX;
-        res[2] = INT_MIN;
+        int input[4][4];
+        int output[4][4];
 
-        memset(&buf, 0, 10 * sizeof(buf));
-        int val = read(connfd, buf, sizeof(buf));
+       // memset(&buf, 0, 10 * sizeof(buf));
+        int val = read(connfd, input, sizeof(input));
         if (val > 0)
         {
             printf("Message received from client address \n");
-            for (int i = 0; i < 10; i++)
-            {
-                if (buf[i] < res[1])
-                {
-                    res[1] = buf[i];
-                }
-                if (buf[i] > res[2])
-                {
-                    res[2] = buf[i];
-                }
-                res[0] += buf[i];
-            }
-            res[0] /= 10;
-            send(connfd, res, 3 * sizeof(int), 0);
+            for (int i = 0; i < 4; i++)
+             {
+              for(int j=0;j<4;j++)
+               {
+                  output[i][j] = input[j][i];
+               }
+             }
+
+            //send(connfd, res, 3 * sizeof(int), 0);
+            send(connfd,output,sizeof(output),0);
             
         }
     }
