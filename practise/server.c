@@ -1,86 +1,47 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <limits.h>
-
-#define PORT 8000
-#define MAXCLI 5
-
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<netinet/in.h>
 int main()
 {
-    int sockfd, connfd, len;
-    int message[10];
-    struct sockaddr_in servaddr, cliaddr;
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
-    {
-        printf("Socket creation failed\n");
-        exit(0);
-    }
-    else
-    {
-        printf("Socket created\n");
-    }
+char message[]="You have received a message!";
+int server_socket=socket(AF_INET,SOCK_STREAM,0);
+//define the server address
+struct sockaddr_in server_address;
+server_address.sin_family=AF_INET;
+server_address.sin_port=htons(9200);
+server_address.sin_addr.s_addr=INADDR_ANY; //server is binded with LocalHost(same machine)
 
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = INADDR_ANY;
-    servaddr.sin_port = htons(PORT);
-    if (bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
-    {
-        printf("Socket binding failed\n");
-        exit(0);
-    }
-    else
-    {
-        printf("Socket binded\n");
-    }
+//binding the socket with specified IP
+bind(server_socket,(struct sockaddr*) &server_address, sizeof(server_address));
+//listening for connection
+listen(server_socket,5);
+//accepting connection
+int client_socket= accept(server_socket ,NULL,NULL);
+//sending the message
 
-    if (listen(sockfd, MAXCLI) < 0)
-    {
-        printf("Listen failed\n");
-        exit(0);
-    }
-    else
-    {
-        printf("Listening on port %d\n", servaddr.sin_addr.s_addr);
-    }
-    memset(&cliaddr, 0, sizeof(cliaddr));
-    len = sizeof(cliaddr);
-    for (;;)
-    {
-        connfd = accept(sockfd, (struct sockaddr *)&cliaddr, &len);
-        if (connfd < 0)
-        {
-            printf("Connection establishment failed\n");
-        }
-        else
-        {
-            printf("Connection established\n");
-        }
+int n;
 
-        int input[4][4];
-        int output[4][4];
+printf("Enter the value of n:\n");
+scanf("%d",&n);
 
-       // memset(&buf, 0, 10 * sizeof(buf));
-        int val = read(connfd, input, sizeof(input));
-        if (val > 0)
-        {
-            printf("Message received from client address \n");
-            for (int i = 0; i < 4; i++)
-             {
-              for(int j=0;j<4;j++)
-               {
-                  output[i][j] = input[j][i];
-               }
-             }
+int mat[n][n];
 
-            //send(connfd, res, 3 * sizeof(int), 0);
-            send(connfd,output,sizeof(output),0);
-            
-        }
-    }
+printf("Enter the mtrx:\n");
+
+for(int i=0;i<n;i++)
+ {
+   for(int j=0;j<n;j++)
+   {
+     scanf("%d",&mat[i][j]);
+   }
+ }
+
+send(client_socket,&n,sizeof(n),0);
+send(client_socket,mat,sizeof(mat),0);
+//close the socket
+close(server_socket);
+return 0;
 }

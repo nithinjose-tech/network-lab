@@ -1,82 +1,52 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-
-#define PORT 8000
-#define MAXCLI 5
-
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<netinet/in.h>
 int main()
 {
-    int sockfd;
-    struct sockaddr_in servaddr;
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
-    {
-        printf("Socket creation failed\n");
-        exit(0);
-    }
-    else
-    {
-        printf("Socket created\n");
-    }
+int network_socket=socket(AF_INET,SOCK_STREAM,0);
+//define the server address
+struct sockaddr_in server_address;
+server_address.sin_family=AF_INET;
+server_address.sin_port=htons(9200);
+server_address.sin_addr.s_addr=INADDR_ANY;
 
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = INADDR_ANY;
-    servaddr.sin_port = htons(PORT);
-    if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
-    {
-        printf("Connection establishment failed\n");
-        exit(0);
-    }
-    else
-    {
-        printf("Connection established\n");
-    }
+int con_status=connect(network_socket,(struct sockaddr*)
+&server_address,sizeof(server_address));
+//gives the status of he connection
+if(con_status==-1)
+{
+printf("Connection couldn't be established");
+}
+int value;
+recv(network_socket,&value,sizeof(value),0);
 
-    //int buf[10] = {9, 4, 5, 2, 88, 231, -323, 233, 232, 0}, res[3];
-    int input[4][4];
-    int output[4][4];
-    
-    printf("Enter the value of matrices\n");
-    for(int i=0;i<4;i++)
-    {
-      for(int j=0;j<4;j++)
-      {
-        scanf("%d",&input[i][j]);
-      }
-    }
-    //int min, max, avg;
+int mat[value][value];
 
-    int length = send(sockfd, input, sizeof(input), 0);
-    if (length > 0)
+recv(network_socket,mat,sizeof(mat),0);
+printf(" The received message is %d",value);
+
+printf("The matrix is:\n");
+
+for(int i=0;i<value;i++)
+ {
+   for(int j=0;j<value;j++)
     {
-        printf("Array send to server \n");
-         for(int i=0;i<4;i++)
-	    {
-	      for(int j=0;j<4;j++)
-	      {
-		printf("%d",input[i][j]);
-	      }
-	       printf("\n");
-	    }
+      int temp = mat[i][j];
+      mat[i][j] = mat[j][i];
+      mat[j][i] = temp;
     }
-    int recv_length = read(sockfd, output,sizeof(output));
-    if (recv_length > 0)
+ }
+ 
+ for(int i=0;i<value;i++)
+ {
+   for(int j=i;j<value;j++)
     {
-        printf("THe transpose is:\n");
-         for(int i=0;i<4;i++)
-	    {
-	      for(int j=0;j<4;j++)
-	      {
-		printf("%d\t",output[i][j]);
-	      }
-	       printf("\n");
-	    }
-        
+      printf("%d\t",mat[i][j]);
     }
-    close(sockfd);
+    printf("\n");
+ }
+close(network_socket);
 }

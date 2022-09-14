@@ -43,6 +43,7 @@ int main()
     if (recvd > 0)
     {
         printf("Message received from server address %s\n", retbuf);
+        
     }
     for (int i=0;i<20;i++)
     {
@@ -52,6 +53,7 @@ int main()
         if (recvd > 0)
         {
             printf("Message received from server address %s\n", retbuf);
+            
         }
         sleep(1);
     }

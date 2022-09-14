@@ -66,7 +66,7 @@ void main()
 	printf("\nEnter the number of nodes : ");
 	scanf("%d",&n[0]);
 	struct node rt[n[0]];
-	printf("\nEnter the cost matrix (put 99 for infinity):\n");
+	printf("\nEnter the cost matrix :\n");
 	int dmat[n[0]][n[0]];
 	for(i=0;i<n[0];i++)
 	{
@@ -77,25 +77,20 @@ void main()
 			
 		}
 	}
-	printf("\nEnter the root Node: \n");
-	int s;
-	scanf("%d",&s);
+
 	struct node result[n[0]];
 	send(server_fd,n,sizeof(int),0);
 	send(server_fd,dmat,sizeof(int)*n[0]*n[0],0);
-	send(server_fd,&s,sizeof(int),0);
-
-	int dist[n[0]];
-
-	recv(server_fd,dist,sizeof(int)*n[0],0);
-	printf("Vertex \tDistance from Source %d\n",s);
-	printf("---------------------------------\n");
-    for (int i=0;i<n[0];i++)
-        printf("%d \t %d\n", i, dist[i]);
-	
+	recv(server_fd,result,sizeof(struct node)*n[0],0);
+	for(i=0;i<n[0];i++)
+	{
+		printf("\n\nState value for router %d is \n",i+1);
+		for(j=0;j<n[0];j++)
+		{
+			printf("\t\nnode %d via %d Distance %d ",j+1,result[i].from[j]+1,result[i].dist[j]);
+		}
+	}	
 	printf("\n\n");
 	
 }
 	
-
-
